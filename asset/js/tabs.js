@@ -5,19 +5,18 @@ const tabList = $$(".js-tabs");
 
 tabList.forEach( (tabs) => {
     const tabButtons = tabs.querySelectorAll(".tab-button");
-    const tabPane = tabs.querySelectorAll(".tab-content__pane");
+    const tabPanel = tabs.querySelectorAll(".tab-content__panel");
 
     function setActiveTab(id) {
-      
         // xoa class
         tabButtons.forEach( tab => tab.classList.remove("active"));
-        tabPane.forEach( tab =>tab.classList.remove("active"));
+        tabPanel.forEach( tab =>tab.classList.remove("active"));
         // Them class
         const activeBtn = tabs.querySelector(`[data-target="${id}"]`);
         if (activeBtn) activeBtn.classList.add("active");
 
-        const activePane = tabs.querySelector(`#${id}`);
-        if (activePane) activePane.classList.add("active");
+        const activePanel = tabs.querySelector(`#${id}`);
+        if (activePanel) activePanel.classList.add("active");
     }
 
     tabs.onclick = (event) =>{
@@ -42,5 +41,3 @@ tabList.forEach( (tabs) => {
     
 })
 
-
-// =============== CheckAll ================

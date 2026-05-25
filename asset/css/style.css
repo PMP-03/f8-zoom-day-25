@@ -60,10 +60,10 @@ button{
     background: #ececee;
     color: #000;
 }
-.tab-content__pane{
+.tab-content__panel{
     display: none;
 }
-.tab-content__pane.active{
+.tab-content__panel.active{
     display: block;
     transition: all 0.3s ease-in-out;
 }
