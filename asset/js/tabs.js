@@ -1,43 +1,74 @@
-const $ = document.querySelector.bind(document);
-const $$ = document.querySelectorAll.bind(document);
+function Tabs(selector){
+    this.container = document.querySelector(selector);
+    this.container.tabIndex = 0;
+    this.id = this.container.id
 
-const tabList = $$(".js-tabs");
-
-tabList.forEach( (tabs) => {
-    const tabButtons = tabs.querySelectorAll(".tab-button");
-    const tabPanel = tabs.querySelectorAll(".tab-content__panel");
-
-    function setActiveTab(id) {
-        // xoa class
-        tabButtons.forEach( tab => tab.classList.remove("active"));
-        tabPanel.forEach( tab =>tab.classList.remove("active"));
-        // Them class
-        const activeBtn = tabs.querySelector(`[data-target="${id}"]`);
-        if (activeBtn) activeBtn.classList.add("active");
-
-        const activePanel = tabs.querySelector(`#${id}`);
-        if (activePanel) activePanel.classList.add("active");
+    if (!this.container) {
+        console.error(`Tabzy: No container found for selector '${selector}'`);
+        return;
     }
 
-    tabs.onclick = (event) =>{
-    const tab = event.target.closest(".tab-button");
-    if (!tab) return;
-
-    const targetId  = tab.dataset.target;
-    setActiveTab(targetId );
+    this.tabs = this.container.querySelectorAll(".tab-button")
+    if (!this.tabs.length) {
+        console.error(`Tabzy: No tabs found inside the container`);
+        return;
     }
 
-    tabs.tabIndex = 0;
+    this.panels = this.container.querySelectorAll(".tab-content__panel");
+    if (this.tabs.length !== this.panels.length) return;
 
-    tabs.onkeydown = (event) => {
-        const valueKey = Number(event.key);
-        
-        if (valueKey >= 1 && valueKey <= tabButtons.length){
-            const id = tabButtons[valueKey - 1].dataset.target;
-            setActiveTab(id)
+    this._init();
+
+    this.container.addEventListener('click', () => {
+        this.container.focus();
+    });
+
+    this.container.addEventListener('keydown', (event) => {
+        const index = Number(event.key) - 1;
+
+         if(index >= 0 && index < this.tabs.length){
+            this._activateTab(this.tabs[index], index)
+         }
+    })
+}
+
+Tabs.prototype._init = function(){
+    const params = new URLSearchParams(location.search)
+    const currentTab = Number(params.get(this.id)) ?? 0;
+    const tabIndex = currentTab;
+    this.tabs[tabIndex].classList.add('active')
+    this.panels[tabIndex].classList.add('active')
+
+    this.tabs.forEach((tab, index) => {
+        tab.onclick = () => {
+            this._activateTab(tab, index);
         }
+    })
+    
+}
+
+Tabs.prototype._activateTab = function(tab, index){
+    this.tabs.forEach(element => {
+        element.classList.remove('active');
+    });
+    this.panels.forEach(element => {
+        element.classList.remove('active');
+    });
+
+    tab.classList.add('active');
+    this.panels[index].classList.add('active');
+
+    const params = new URLSearchParams(location.search);
+    if(index === 0){
+        params.delete(this.id);
+    }else{
+        params.set(this.id, index);
     }
 
-    
-})
+    const paramsStr = params.size ? `?${params}` : "";
+    const newUrl = `${location.pathname}${paramsStr}${location.hash}`;
+
+    history.replaceState(null, null, newUrl );
+    console.log(params)
+}
 
